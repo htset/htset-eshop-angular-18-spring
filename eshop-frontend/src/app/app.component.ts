@@ -1,10 +1,15 @@
 import { Component } from '@angular/core';
+import { StoreService } from './services/store.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'eshop-frontend';
+  title = 'my-eshop';
+
+  constructor(
+    public storeService: StoreService
+  ) { }
 }
