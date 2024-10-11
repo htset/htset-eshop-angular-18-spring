@@ -22,9 +22,20 @@ public class ItemController {
   }
 
   @GetMapping
-  public ResponseEntity<ItemPayloadDTO> getItems() {
+  public ResponseEntity<ItemPayloadDTO> getItems(
+      @RequestParam(defaultValue = "0") int pageNumber,
+      @RequestParam(defaultValue = "10") int pageSize,
+      @RequestParam(required = false) String category,
+      @RequestParam(required = false) String name) {
     try {
-      ItemPayloadDTO itemPayload = itemService.getItems();
+      //Validate pageNumber and pageSize
+      if (pageNumber < 1 || pageSize < 1) {
+        return ResponseEntity.badRequest()
+            .body(null); //Return 400 Bad Request for invalid page parameters
+      }
+
+      ItemPayloadDTO itemPayload = itemService
+          .getItems(pageNumber, pageSize, category, name);
       return ResponseEntity.ok(itemPayload); //Return 200 OK with the item payload
     } catch (Exception e) {
       logger.error("Error fetching items: {}", e.getMessage());
@@ -32,6 +43,7 @@ public class ItemController {
           .body(null); //Return 500 Internal Server Error
     }
   }
+
 
   @GetMapping("/{id}")
   public ResponseEntity<Item> getItemById(@PathVariable Long id) {

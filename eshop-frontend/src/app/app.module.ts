@@ -9,6 +9,7 @@ import { ItemDetailsComponent } from './components/public/item-details/item-deta
 import { FormsModule } from '@angular/forms';
 import { FilterComponent } from './components/shared/filter/filter.component';
 import { CartComponent } from './components/public/cart/cart.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { CartComponent } from './components/public/cart/cart.component';
     BrowserModule,
     AppRoutingModule,
     NgbModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

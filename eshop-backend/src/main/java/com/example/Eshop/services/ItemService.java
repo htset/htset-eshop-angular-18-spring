@@ -4,10 +4,13 @@ import com.example.Eshop.dtos.ItemPayloadDTO;
 import com.example.Eshop.exceptions.ItemNotFoundException;
 import com.example.Eshop.models.Item;
 import com.example.Eshop.repositories.ItemRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -21,11 +24,31 @@ public class ItemService {
     this.itemRepository = itemRepository;
   }
 
-  //Get all items
-  public ItemPayloadDTO getItems() {
-    try{
-      List<Item> items = itemRepository.findAll();
-      return new ItemPayloadDTO(items, items.size());
+  //Get items based on pagination
+  public ItemPayloadDTO getItems(int page, int size, String category, String name) {
+    try {
+      if (page < 1 || size < 1) {
+        throw new
+            IllegalArgumentException("Page and size must be greater than 0");
+      }
+
+      //Split category string into individual categories
+      List<String> categories = Arrays.asList(category.split(","));
+
+      Page<Item> itemPage;
+      page -= 1; //Pagination starts with 0, in the frontend we start with 1
+
+      if ((category != null && !category.isEmpty())
+          || (name != null && !name.isEmpty())) {
+        //If search criteria is provided
+        itemPage = itemRepository
+            .findByColumnContainingValuesAndFilter(categories,
+                name, PageRequest.of(page, size));
+      } else {
+        itemPage = itemRepository.findAll(PageRequest.of(page, size));
+      }
+      return new
+          ItemPayloadDTO(itemPage.getContent(), itemPage.getTotalElements());
     } catch (Exception e) {
       logger.error("Error fetching items: {}", e.getMessage());
       throw new RuntimeException("Unable to fetch items, please try again later");
