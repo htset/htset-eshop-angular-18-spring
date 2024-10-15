@@ -6,9 +6,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
@@ -16,6 +15,15 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+  private final JwtRequestFilter jwtRequestFilter;
+  private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+  public SecurityConfig(JwtRequestFilter jwtRequestFilter,
+                        JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
+    this.jwtRequestFilter = jwtRequestFilter;
+    this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+  }
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http)
@@ -25,10 +33,18 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         //Enable CORS
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        //Access all endpoints without authentication - for now
+        //Define public endpoints that can be accessed without authentication
         .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
-        );
+                .requestMatchers("/users/**").hasRole("ADMIN")
+                .requestMatchers(
+                    "/auth/**",
+                    "/items/**").permitAll()  // Allow access to auth endpoints
+                .anyRequest().authenticated() // All other endpoints get authentication
+        )
+        //Add JWT token filter before UsernamePasswordAuthenticationFilter
+		    .addFilterBefore(jwtRequestFilter,
+                UsernamePasswordAuthenticationFilter.class);
+
     return http.build();
   }
 
@@ -58,8 +74,4 @@ public class SecurityConfig {
     return authConfiguration.getAuthenticationManager();
   }
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
 }
