@@ -5,7 +5,8 @@ export class User {
   firstName?: string;
   lastName?: string;
   token?: string;
+  refreshToken?: string;
+  refreshTokenExpiry?: Date;
   role?: string;
   email?: string;
-  status?: string;
 }

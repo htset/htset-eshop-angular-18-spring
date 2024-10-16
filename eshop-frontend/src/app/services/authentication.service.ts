@@ -27,9 +27,26 @@ export class AuthenticationService {
       );
   }
 
-  logout() {
+  logout(refreshToken: string) {
+    this.http.post<any>(`${environment.apiUrl}/auth/revoke`,
+      { refreshToken })
+      .subscribe();
+
     this.storeService.cart.emptyCart();
     sessionStorage.removeItem('user');
+
     this.storeService.user = null;
+  }
+
+  refreshToken(token: string, refreshToken: string) {
+    return this.http.post<User>(`${environment.apiUrl}/auth/refresh`,
+      { token, refreshToken })
+      .pipe(
+        map(user => {
+          sessionStorage.setItem('user', JSON.stringify(user));
+          this.storeService.user = user;
+          return user;
+        })
+      );
   }
 }

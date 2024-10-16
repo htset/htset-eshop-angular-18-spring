@@ -84,5 +84,16 @@ export class StoreService {
     this._user.next(val);
   }
 
+  private readonly _isRefreshing = new BehaviorSubject<boolean>(false);
+  readonly isRefreshing$ = this._isRefreshing.asObservable();
+
+  get isRefreshing(): boolean {
+    return this._isRefreshing.getValue();
+  }
+
+  set isRefreshing(val: boolean) {
+    this._isRefreshing.next(val);
+  }
+
   constructor() { }
 }

@@ -3,6 +3,8 @@ package com.example.Eshop.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,4 +21,6 @@ public class User {
   private String status;
   private String role;
   private String token;
+  private String refreshToken;
+  private Date refreshTokenExpiry;
 }

@@ -1,9 +1,11 @@
 package com.example.Eshop.config;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -58,9 +60,9 @@ public class JwtUtilities {
         .setClaims(claims)
         .setSubject(subject)
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        //Token valid for 12 hours
+        //Token valid for 2 minutes
 		    .setExpiration(new Date(System.currentTimeMillis()
-            + 1000 * 60 * 60 * 12))
+            + 1000 * 60 * 2))
         .signWith(secretKey, SignatureAlgorithm.HS512)
         .compact();
   }
@@ -68,6 +70,51 @@ public class JwtUtilities {
   //Validate the token by checking username and expiry
   public Boolean validateToken(String token, String username) {
     final String extractedUsername = extractUsername(token);
-    return (extractedUsername.equals(username) && !isTokenExpired(token));
+    return (extractedUsername.equals(username)
+        && !isTokenExpired(token));
+  }
+
+  public String generateRefreshToken(String username) {
+    Map<String, Object> claims = new HashMap<>();
+    //Just use the username for claims
+    return createRefreshToken(claims, username);
+  }
+
+  public String createRefreshToken(Map<String, Object> claims,
+                                   String subject) {
+    Date expirationDate = new Date(System.currentTimeMillis()
+        + 1000L * 60 * 60 * 24 * 30); //Use 'L' to avoid int overflow!
+
+    return Jwts.builder()
+        .setClaims(claims)
+        .setSubject(subject)
+        .setIssuedAt(new Date(System.currentTimeMillis()))
+        .setExpiration(expirationDate) //Token valid for 30 days
+        .signWith(secretKey, SignatureAlgorithm.HS512)
+        .compact();
+  }
+
+  //Validate the refresh token
+  public boolean validateRefreshToken(String token) {
+    try {
+      //Extract claims
+      Claims claims = extractAllClaims(token);
+
+      //Check if the token has expired
+      if (claims.getExpiration().before(new Date())) {
+        return false; //Token expired
+      }
+      //Token is valid
+      return true;
+    } catch (ExpiredJwtException e) {
+      System.out.println("Token has expired: " + e.getMessage());
+      return false;
+    } catch (SignatureException e) {
+      System.out.println("Invalid token signature: " + e.getMessage());
+      return false;
+    } catch (Exception e) {
+      System.out.println("Invalid token: " + e.getMessage());
+      return false;
+    }
   }
 }

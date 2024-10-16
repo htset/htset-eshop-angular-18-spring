@@ -32,7 +32,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     //Skip filtering for login endpoint
     String path = request.getServletPath();
-    if (path.equals("/auth/login")) {
+    if (path.equals("/auth/login")
+        || path.equals("/auth/refresh")
+        || path.equals("/auth/revoke")) {
       chain.doFilter(request, response);
       return;
     }

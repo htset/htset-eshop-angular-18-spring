@@ -3,6 +3,7 @@ package com.example.Eshop.controllers;
 import com.example.Eshop.config.JwtUtilities;
 import com.example.Eshop.dtos.AuthRequestDTO;
 import com.example.Eshop.dtos.CustomUserDetails;
+import com.example.Eshop.dtos.TokenRefreshDTO;
 import com.example.Eshop.dtos.UserDTO;
 import com.example.Eshop.models.User;
 import com.example.Eshop.services.CustomUserDetailsService;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
 
 @RestController
 @RequestMapping("/auth")
@@ -53,13 +56,18 @@ public class AuthController {
           (CustomUserDetails)userDetailsService
               .loadUserByUsername(authRequest.getUsername());
 
-      //Generate JWT token
+      //Generate JWT tokens
       String token = jwtUtilities.generateToken(userDetails.getUsername(),
           userDetails.getId(), userDetails.getRole());
+      String refreshToken = jwtUtilities
+          .generateRefreshToken(userDetails.getUsername());
 
       //Save token to database
       User user = userService.getUserById(userDetails.getId());
       user.setToken(token);
+      user.setRefreshToken(refreshToken);
+      user.setRefreshTokenExpiry(new Date(System.currentTimeMillis()
+          + 1000L * 60 * 60 * 24 * 30)); // 30-day expiry
       userService.updateUser(user);
 
       return ResponseEntity.ok(this.createDTO(user));
@@ -75,6 +83,70 @@ public class AuthController {
     }
   }
 
+  @PostMapping("/refresh")
+  public ResponseEntity<?> refreshToken(@RequestBody TokenRefreshDTO request) {
+    try{
+      String refreshToken = request.getRefreshToken();
+      if (jwtUtilities.validateRefreshToken(refreshToken)) {
+        String username = jwtUtilities.extractUsername(refreshToken);
+        CustomUserDetails userDetails
+            = userDetailsService.loadUserByUsername(username);
+
+        //Generate new token
+        String newToken = jwtUtilities.generateToken(userDetails.getUsername(),
+            ((CustomUserDetails) userDetails).getId(), userDetails.getRole());
+
+        //Save updated tokens to database
+        User user = userService.getUserById(userDetails.getId());
+        user.setToken(newToken);
+        userService.updateUser(user);
+
+        return ResponseEntity.ok(this.createDTO(user));
+      } else {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body("Invalid refresh token");
+      }
+    } catch (UsernameNotFoundException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body("User not found");
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Refresh token failed:" + e.getMessage());
+    }
+  }
+
+  @PostMapping("/revoke")
+  public ResponseEntity<?> revokeToken(@RequestBody TokenRefreshDTO request) {
+    try {
+      String refreshToken = request.getRefreshToken();
+      if (jwtUtilities.validateRefreshToken(refreshToken)) {
+        String username = jwtUtilities.extractUsername(refreshToken);
+        CustomUserDetails userDetails
+            = userDetailsService.loadUserByUsername(username);
+
+        //Revoke the tokens by setting them to null
+        User user = userService.getUserById(userDetails.getId());
+        user.setToken(null);
+        user.setRefreshToken(null);
+        user.setRefreshTokenExpiry(null);
+
+        //Update the user in the database
+        userService.updateUser(user);
+
+        return ResponseEntity.ok(this.createDTO(user));
+      } else {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Error revoking token");
+      }
+    } catch (UsernameNotFoundException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body("User not found");
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Revoke token failed: " + e.getMessage());
+    }
+  }
+
   //Create user DTO for the response
   private UserDTO createDTO(User user){
     UserDTO userResponse = new UserDTO();
@@ -83,6 +155,8 @@ public class AuthController {
     userResponse.setStatus(user.getStatus());
     userResponse.setRole(user.getRole());
     userResponse.setToken(user.getToken());
+    userResponse.setRefreshToken(user.getRefreshToken());
+    userResponse.setRefreshTokenExpiry(user.getRefreshTokenExpiry());
     return userResponse;
   }
 }
