@@ -10,12 +10,14 @@ import { AdminHomeComponent }
 import { AuthGuard } from './helpers/auth.guard';
 import { AdminUsersComponent }
   from './components/admin/admin-users/admin-users.component';
+import { CheckoutComponent } from './components/public/checkout/checkout.component';
 
 const routes: Routes = [
   { path: '', component: ItemsComponent },
   { path: 'items', component: ItemsComponent },
   { path: 'items/:id', component: ItemDetailsComponent },
   { path: 'cart', component: CartComponent },
+  { path: 'checkout', component: CheckoutComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
   {
     path: 'admin', component: AdminHomeComponent,

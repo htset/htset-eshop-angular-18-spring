@@ -17,28 +17,11 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot) {
     const currentUser = this.storeService.user;
     if (currentUser && currentUser.role == 'ADMIN') {
-      if (currentUser.token && !this.tokenExpired(currentUser.token))
-        return true;
-
-      if (!this.refreshToken(currentUser?.token || '',
-        currentUser?.refreshToken || '')) {
-        this.router.navigate(['/login'],
-          { queryParams: { returnUrl: state.url } });
-        return false;
-      }
       return true;
     }
     else if (currentUser && currentUser.role == 'CUSTOMER') {
-      if (currentUser.token && !this.tokenExpired(currentUser.token)) {
+      if (route.url.some(segment => segment.path.includes('admin'))) {
         this.router.navigate(['/items']);
-        return true;
-      }
-
-      if (!this.refreshToken(currentUser?.token || '',
-        currentUser?.refreshToken || '')) {
-        this.router.navigate(['/login'],
-          { queryParams: { returnUrl: state.url } });
-        return false;
       }
       return true;
     }
@@ -48,22 +31,4 @@ export class AuthGuard implements CanActivate {
     return false;
   }
 
-  private tokenExpired(token: string) {
-    const expiry = (JSON.parse(atob(token.split('.')[1]))).exp;
-    return (Math.floor((new Date).getTime() / 1000)) >= expiry;
-  }
-
-  private async refreshToken(token: string,
-    refreshToken: string): Promise<boolean> {
-    try {
-      this.storeService.isRefreshing = true;
-      await lastValueFrom(this.authenticationService
-        .refreshToken(token, refreshToken));
-      this.storeService.isRefreshing = false;
-      return true;
-    }
-    catch (err) {
-      return false;
-    }
-  }
 }

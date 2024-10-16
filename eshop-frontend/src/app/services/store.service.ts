@@ -84,15 +84,15 @@ export class StoreService {
     this._user.next(val);
   }
 
-  private readonly _isRefreshing = new BehaviorSubject<boolean>(false);
-  readonly isRefreshing$ = this._isRefreshing.asObservable();
+  private readonly _deliveryAddress = new BehaviorSubject<number>(-1);
+  readonly deliveryAddress$ = this._deliveryAddress.asObservable();
 
-  get isRefreshing(): boolean {
-    return this._isRefreshing.getValue();
+  get deliveryAddress(): number {
+    return this._deliveryAddress.getValue();
   }
 
-  set isRefreshing(val: boolean) {
-    this._isRefreshing.next(val);
+  set deliveryAddress(val: number) {
+    this._deliveryAddress.next(val);
   }
 
   constructor() { }
