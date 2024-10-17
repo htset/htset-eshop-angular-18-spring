@@ -17,9 +17,22 @@ public class UserService {
         .orElseThrow(() -> new RuntimeException("User not found"));
   }
 
+  public User getUserByUsername(String username) {
+    return userRepository.findByUsername(username);
+  }
+
+  public User getUserByEmail(String email) {
+    return userRepository.findByEmail(email);
+  }
+
   public List<User> getAllUsers(){
     return userRepository.findAll();
   }
+
+  public User getUserByRegistrationCode(String registrationCode) {
+    return userRepository.findByRegistrationCode(registrationCode);
+  }
+
 
   public User updateUser(User user) {
     return userRepository.save(user);  //Save or update the user

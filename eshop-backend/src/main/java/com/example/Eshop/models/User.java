@@ -23,4 +23,5 @@ public class User {
   private String token;
   private String refreshToken;
   private Date refreshTokenExpiry;
+  private String registrationCode;
 }

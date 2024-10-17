@@ -24,6 +24,11 @@ import { LoadingDialogComponent } from './components/shared/loading-dialog/loadi
 import { ErrorInterceptor } from './helpers/error-interceptor';
 import { GlobalErrorHandler } from './helpers/global-error-handler';
 import { AnalyticsDirective } from './directives/analytics.directive';
+import { RegistrationComponent } from './components/public/registration/registration.component';
+import { RecaptchaFormsModule, RecaptchaModule } from 'ng-recaptcha-2';
+import { RegistrationConfirmComponent } from './components/public/registration-confirm/registration-confirm.component';
+import { ForgotPasswordComponent } from './components/public/forgot-password/forgot-password.component';
+import { NewPasswordComponent } from './components/public/new-password/new-password.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +46,11 @@ import { AnalyticsDirective } from './directives/analytics.directive';
     SummaryComponent,
     ErrorDialogComponent,
     LoadingDialogComponent,
-    AnalyticsDirective
+    AnalyticsDirective,
+    RegistrationComponent,
+    RegistrationConfirmComponent,
+    ForgotPasswordComponent,
+    NewPasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -49,7 +58,10 @@ import { AnalyticsDirective } from './directives/analytics.directive';
     NgbModule,
     FormsModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RecaptchaModule,
+    RecaptchaFormsModule
+
   ],
   providers: [
     provideAnimationsAsync(),
