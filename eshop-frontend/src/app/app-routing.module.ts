@@ -11,6 +11,8 @@ import { AuthGuard } from './helpers/auth.guard';
 import { AdminUsersComponent }
   from './components/admin/admin-users/admin-users.component';
 import { CheckoutComponent } from './components/public/checkout/checkout.component';
+import { PaymentComponent } from './components/public/payment/payment.component';
+import { SummaryComponent } from './components/public/summary/summary.component';
 
 const routes: Routes = [
   { path: '', component: ItemsComponent },
@@ -18,6 +20,9 @@ const routes: Routes = [
   { path: 'items/:id', component: ItemDetailsComponent },
   { path: 'cart', component: CartComponent },
   { path: 'checkout', component: CheckoutComponent, canActivate: [AuthGuard] },
+  { path: 'payment', component: PaymentComponent, canActivate: [AuthGuard] },
+  { path: 'summary', component: SummaryComponent, canActivate: [AuthGuard] },
+
   { path: 'login', component: LoginComponent },
   {
     path: 'admin', component: AdminHomeComponent,
