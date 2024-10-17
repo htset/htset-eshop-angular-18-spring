@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/auth/**",
                     "/items/**",
+                    "/images/**",
                     "/remoteLogging/**").permitAll()  // Allow access to auth endpoints
                 .anyRequest().authenticated() // All other endpoints get authentication
         )

@@ -4,6 +4,7 @@ import { StoreService } from '../../../services/store.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { skip } from 'rxjs';
 import { FilterComponent } from '../../shared/filter/filter.component';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-items',
@@ -11,6 +12,8 @@ import { FilterComponent } from '../../shared/filter/filter.component';
   styleUrl: './items.component.css'
 })
 export class ItemsComponent implements OnInit {
+
+  imageUrl: string = environment.imagesUrl;
 
   constructor(
     private itemService: ItemService,

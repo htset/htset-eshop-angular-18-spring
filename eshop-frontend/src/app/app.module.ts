@@ -29,6 +29,8 @@ import { RecaptchaFormsModule, RecaptchaModule } from 'ng-recaptcha-2';
 import { RegistrationConfirmComponent } from './components/public/registration-confirm/registration-confirm.component';
 import { ForgotPasswordComponent } from './components/public/forgot-password/forgot-password.component';
 import { NewPasswordComponent } from './components/public/new-password/new-password.component';
+import { AdminItemsComponent } from './components/admin/admin-items/admin-items.component';
+import { AdminItemFormComponent } from './components/admin/admin-item-form/admin-item-form.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +52,9 @@ import { NewPasswordComponent } from './components/public/new-password/new-passw
     RegistrationComponent,
     RegistrationConfirmComponent,
     ForgotPasswordComponent,
-    NewPasswordComponent
+    NewPasswordComponent,
+    AdminItemsComponent,
+    AdminItemFormComponent
   ],
   imports: [
     BrowserModule,

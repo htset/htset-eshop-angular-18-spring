@@ -14,7 +14,12 @@ Page size:
     <div class="card" style="width: 15rem">
       <div class="card-body">
         <h5 class="card-title">
-          <a routerLink="/items/{{item.id}}">{{item.name}}</a>
+          <a routerLink="/items/{{item.id}}">
+            {{item.name}}
+            @if(item.images !== undefined && item.images[0] !== undefined){
+            <img src="{{imageUrl}}/{{item.images[0].fileName}}" height="70px" style="margin:10px" />
+            }
+          </a>
         </h5>
         <p class="card-subtitle mb-2 text-muted">${{item.price}}</p>
       </div>

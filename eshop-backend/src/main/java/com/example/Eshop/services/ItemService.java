@@ -69,4 +69,51 @@ public class ItemService {
       throw new RuntimeException("Unable to fetch item, please try again later");
     }
   }
+
+  //Create a new item
+  public Item createItem(Item item) {
+    try {
+      return itemRepository.save(item);
+    }
+    catch (Exception e) {
+      logger.error("Error creating item: {}", e.getMessage());
+      throw new RuntimeException("Unable to create item, please try again later");
+    }
+  }
+
+  //Update an existing item by ID
+  public Item updateItem(Long id, Item updatedItem) {
+    try {
+      Item existingItem = getItemById(id);
+      existingItem.setName(updatedItem.getName());
+      existingItem.setDescription(updatedItem.getDescription());
+      existingItem.setCategory(updatedItem.getCategory());
+      existingItem.setPrice(updatedItem.getPrice());
+
+      return itemRepository.save(existingItem);
+    }
+    catch (ItemNotFoundException e) {
+      logger.error("Error updating item with id {}: {}", id, e.getMessage());
+      throw e;
+    } catch (Exception e) {
+      logger.error("Error updating item with id {}: {}", id, e.getMessage());
+      throw new RuntimeException("Unable to update item, please try again later");
+    }
+  }
+
+  //Delete an item by its ID
+  public void deleteItem(Long id) {
+    try {
+      Item item = getItemById(id);
+      itemRepository.delete(item);
+    }
+    catch (ItemNotFoundException e) {
+      logger.error("Error deleting item with id {}: {}", id, e.getMessage());
+      throw e;
+    }
+    catch (Exception e) {
+      logger.error("Error deleting item with id {}: {}", id, e.getMessage());
+      throw new RuntimeException("Unable to delete item, please try again later");
+    }
+  }
 }

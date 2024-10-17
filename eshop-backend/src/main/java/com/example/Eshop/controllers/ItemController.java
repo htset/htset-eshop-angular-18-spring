@@ -60,4 +60,62 @@ public class ItemController {
           .body(null); //Return 500 Internal Server Error for other issues
     }
   }
+
+  @PostMapping
+  public ResponseEntity<Item> createItem(@RequestBody Item item) {
+    try {
+      Item createdItem = itemService.createItem(item);
+      //Return 201 Created with the new item
+      return ResponseEntity.status(HttpStatus.CREATED).body(createdItem);
+    }
+    catch (Exception e) {
+      logger.error("Error creating item: {}", e.getMessage());
+      //Return 500 Internal Server Error if item creation fails
+      return ResponseEntity
+          .status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<Item> updateItem(@PathVariable Long id,
+                                         @RequestBody Item updatedItem) {
+    try {
+      Item item = itemService.updateItem(id, updatedItem);
+      //Return 200 OK with the updated item
+      return ResponseEntity.ok(item);
+    }
+    catch (ItemNotFoundException e) {
+      logger.error("Error updating item with id {}: {}", id, e.getMessage());
+      //Return 404 Not Found if the item to be updated doesn't exist
+      return ResponseEntity
+          .status(HttpStatus.NOT_FOUND)
+          .body(null);
+    }
+    catch (Exception e) {
+      logger.error("Error updating item with id {}: {}", id, e.getMessage());
+      //Return 500 Internal Server Error for other issues
+      return ResponseEntity
+          .status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(null);
+    }
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
+    try {
+      itemService.deleteItem(id);
+      //Return 204 No Content for successful deletion
+      return ResponseEntity.noContent().build();
+    } catch (ItemNotFoundException e) {
+      logger.error("Error deleting item with id {}: {}", id, e.getMessage());
+      //Return 404 Not Found if the item doesn't exist
+      return ResponseEntity
+          .status(HttpStatus.NOT_FOUND).build();
+    } catch (Exception e) {
+      logger.error("Error deleting item with id {}: {}", id, e.getMessage());
+      //Return 500 Internal Server Error for other issues
+      return ResponseEntity
+          .status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
 }
