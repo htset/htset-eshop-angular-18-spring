@@ -38,7 +38,8 @@ public class SecurityConfig {
                 .requestMatchers("/users/**").hasRole("ADMIN")
                 .requestMatchers(
                     "/auth/**",
-                    "/items/**").permitAll()  // Allow access to auth endpoints
+                    "/items/**",
+                    "/remoteLogging/**").permitAll()  // Allow access to auth endpoints
                 .anyRequest().authenticated() // All other endpoints get authentication
         )
         //Add JWT token filter before UsernamePasswordAuthenticationFilter
