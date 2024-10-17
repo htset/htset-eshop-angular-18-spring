@@ -59,7 +59,8 @@ export class StoreService {
     this._filter.next(val);
   }
 
-  private readonly _cart = new BehaviorSubject<Cart>(new Cart());
+  private readonly _cart =
+    new BehaviorSubject<Cart>(new Cart(localStorage.getItem('cart') || ''));
   readonly cart$ = this._cart.asObservable();
 
   get cart(): Cart {
@@ -69,6 +70,7 @@ export class StoreService {
   set cart(val: Cart) {
     this._cart.next(val);
   }
+
 
   private readonly _user
     = new BehaviorSubject<User | null>(
