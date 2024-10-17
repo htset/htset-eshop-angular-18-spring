@@ -1,0 +1,32 @@
+scalar BigDecimal
+
+type OrderDetail {
+    id: ID!
+    orderId: ID!
+    productId: ID!
+    quantity: Int!
+    price: BigDecimal!
+}
+
+type Order {
+    id: ID!
+    userId: ID!
+    orderDate: String!
+    totalPrice: BigDecimal!
+    orderDetails: [OrderDetail!]!
+    firstName: String!
+    lastName: String!
+    street: String!
+    zip: String!
+    city: String!
+    country: String!
+}
+
+type OrderPayloadDTO {
+    totalCount: Int!
+    orders: [Order!]!
+}
+
+type Query {
+    getOrders(page: Int, pageSize: Int, search: String): OrderPayloadDTO
+}

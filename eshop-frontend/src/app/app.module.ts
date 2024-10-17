@@ -31,6 +31,10 @@ import { ForgotPasswordComponent } from './components/public/forgot-password/for
 import { NewPasswordComponent } from './components/public/new-password/new-password.component';
 import { AdminItemsComponent } from './components/admin/admin-items/admin-items.component';
 import { AdminItemFormComponent } from './components/admin/admin-item-form/admin-item-form.component';
+import { AdminOrdersComponent } from './components/admin/admin-orders/admin-orders.component';
+import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
+import { HttpLink } from 'apollo-angular/http';
+import { InMemoryCache } from '@apollo/client/core';
 
 @NgModule({
   declarations: [
@@ -54,7 +58,8 @@ import { AdminItemFormComponent } from './components/admin/admin-item-form/admin
     ForgotPasswordComponent,
     NewPasswordComponent,
     AdminItemsComponent,
-    AdminItemFormComponent
+    AdminItemFormComponent,
+    AdminOrdersComponent
   ],
   imports: [
     BrowserModule,
@@ -64,8 +69,8 @@ import { AdminItemFormComponent } from './components/admin/admin-item-form/admin
     HttpClientModule,
     ReactiveFormsModule,
     RecaptchaModule,
-    RecaptchaFormsModule
-
+    RecaptchaFormsModule,
+    ApolloModule
   ],
   providers: [
     provideAnimationsAsync(),
@@ -81,6 +86,18 @@ import { AdminItemFormComponent } from './components/admin/admin-item-form/admin
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorInterceptor,
       multi: true
+    },
+    {
+      provide: APOLLO_OPTIONS,
+      useFactory: (httpLink: HttpLink) => {
+        return {
+          cache: new InMemoryCache(),
+          link: httpLink.create({
+            uri: 'http://localhost:8080/graphql',  // our GraphQL endpoint
+          }),
+        };
+      },
+      deps: [HttpLink],
     }
   ],
 

@@ -9,10 +9,14 @@ import com.example.Eshop.models.OrderDetail;
 import com.example.Eshop.repositories.AddressRepository;
 import com.example.Eshop.repositories.ItemRepository;
 import com.example.Eshop.repositories.OrderRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -88,5 +92,24 @@ public class OrderService {
     }
 
     return dto;
+  }
+
+  public List<Order> findPaginatedOrders(int page, int pageSize, String search) {
+    Pageable pageable = PageRequest.of(page, pageSize);
+    if(search == null || search.isEmpty())
+      return orderRepository.findAll(pageable).getContent();
+    else
+      return orderRepository.findAllBySearchCriteria(search, pageable);
+  }
+
+  public int getTotalOrderCount(String search) {
+    if(search == null || search.isEmpty())
+      return orderRepository.countAll();
+    else
+      return orderRepository.countBySearchCriteria(search);
+  }
+
+  public Optional<OrderDTO> getOrderById(Long id) {
+    return orderRepository.findById(id).map(this::createDTOFromOrder);
   }
 }
