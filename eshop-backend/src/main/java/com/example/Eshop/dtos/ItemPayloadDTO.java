@@ -3,6 +3,7 @@ package com.example.Eshop.dtos;
 import com.example.Eshop.models.Item;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,4 +15,10 @@ public class ItemPayloadDTO {
     this.items = items;
     this.count = count;
   }
+
+  public ItemPayloadDTO() {
+    this.items = new ArrayList<>();
+    this.count = 0;
+  }
+
 }
