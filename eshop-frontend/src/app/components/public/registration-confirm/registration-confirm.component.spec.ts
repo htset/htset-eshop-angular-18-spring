@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { RegistrationConfirmComponent } from './registration-confirm.component';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('RegistrationConfirmComponent', () => {
   let component: RegistrationConfirmComponent;
@@ -8,9 +11,15 @@ describe('RegistrationConfirmComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [RegistrationConfirmComponent]
+      declarations: [RegistrationConfirmComponent],
+      imports: [RouterModule.forRoot([]),
+        FormsModule],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting()
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(RegistrationConfirmComponent);
     component = fixture.componentInstance;

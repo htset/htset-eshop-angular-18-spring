@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { FilterComponent } from './filter.component';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 describe('FilterComponent', () => {
   let component: FilterComponent;
@@ -8,9 +12,16 @@ describe('FilterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FilterComponent]
+      declarations: [FilterComponent],
+      imports: [RouterModule.forRoot([]),
+        FormsModule,],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        NgbActiveModal
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(FilterComponent);
     component = fixture.componentInstance;

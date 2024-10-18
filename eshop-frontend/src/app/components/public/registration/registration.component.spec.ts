@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { RegistrationComponent } from './registration.component';
+import { RouterModule } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { RecaptchaFormsModule, RecaptchaModule } from 'ng-recaptcha-2';
 
 describe('RegistrationComponent', () => {
   let component: RegistrationComponent;
@@ -8,9 +12,18 @@ describe('RegistrationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [RegistrationComponent]
+      declarations: [RegistrationComponent],
+      imports: [RouterModule.forRoot([]),
+        ReactiveFormsModule,
+        RecaptchaFormsModule,
+        RecaptchaModule
+      ],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting()
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(RegistrationComponent);
     component = fixture.componentInstance;
